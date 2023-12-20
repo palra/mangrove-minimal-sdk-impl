@@ -29,7 +29,7 @@ export default function registerCommand(_y: typeof yargs) {
       });
 
       console.log(
-        `Bid [${id}] posted: requesting [${gives}] ${base} for [${wants}] ${quote}`
+        `Bid [${id}] posted: requesting [${gives}] ${quote} for [${wants}] ${base}`
       );
     },
   });
