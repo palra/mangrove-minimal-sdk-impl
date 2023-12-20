@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "tsx ./src/index.ts"
+    "dev": "tsx ./src/cli.ts"
   },
   "dependencies": {
     "@mangrovedao/mangrove.js": "2.0.0-13",

@@ -1,4 +1,6 @@
 import { configDotenv } from "dotenv";
+configDotenv();
+
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { destroy } from "./mangrove";
@@ -8,13 +10,12 @@ import cmdLog from "./commands/log";
 import cmdAsk from "./commands/ask";
 import cmdBid from "./commands/bid";
 import cmdBuy from "./commands/order";
-
-configDotenv();
+import cmdCoin from "./commands/coin";
 
 async function main() {
   const cli = yargs(hideBin(process.argv));
 
-  [cmdList, cmdLog, cmdAsk, cmdBid, cmdBuy].forEach((register) =>
+  [cmdList, cmdLog, cmdAsk, cmdBid, cmdBuy, cmdCoin].forEach((register) =>
     register(cli)
   );
 

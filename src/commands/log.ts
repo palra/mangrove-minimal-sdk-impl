@@ -31,7 +31,6 @@ export default function registerCommand(_y: typeof yargs) {
       const market = await mgv.market({ base, quote, tickSpacing });
 
       market.consoleAsks();
-      market.consoleBids();
     },
   });
 }

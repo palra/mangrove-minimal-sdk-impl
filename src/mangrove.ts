@@ -2,7 +2,7 @@
 import { Mangrove, ethers } from "@mangrovedao/mangrove.js";
 
 const provider = new ethers.providers.WebSocketProvider(process.env.LOCAL_URL!);
-const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+export const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
 
 // ew, bad. No Singletons!
 let _mangroveInstance: Mangrove | undefined;

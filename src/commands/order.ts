@@ -1,12 +1,13 @@
+import Big from "big.js";
 import yargs from "yargs";
 import { getMangroveInstance } from "../mangrove";
 import { builder as getMarketOptsBuilder } from "./log";
 
 const builder = (args: yargs.Argv) =>
   getMarketOptsBuilder(args)
-    .option("volume", { type: "number", demandOption: true, requiresArg: true })
+    .option("volume", { type: "string", demandOption: true, requiresArg: true })
     .option("limitPrice", {
-      type: "number", // TODO: consider using string to avoid rounding errors
+      type: "string",
       demandOption: true,
       requiresArg: true,
     })
@@ -21,10 +22,14 @@ export default function registerCommand(_y: typeof yargs) {
       const mgv = await getMangroveInstance();
       const market = await mgv.market({ base, quote, tickSpacing });
 
-      const quoteAllowance = await market.quote.allowance();
-      if (quoteAllowance.lt(volume)) {
-        throw new Error(`Insufficent allowance for quote token`);
-      }
+      const neededAllowance = Big(volume)
+        .mul(limitPrice)
+        .mul(Big(1).plus(Big(slippage).div(100)));
+
+      await market.quote.approveIfHigher(mgv.address, {
+        amount: neededAllowance,
+        overrides: {},
+      });
 
       const { response, result } = await market.buy({
         volume,
@@ -38,8 +43,11 @@ export default function registerCommand(_y: typeof yargs) {
         throw new Error("Order failed");
       }
 
-      const orderResult = await result;
-      console.log(orderResult);
+      const { summary, successes } = await result;
+      console.log(await result);
+      console.log(`Gave [${summary.totalGave}] ${quote}`);
+      console.log(`Got [${summary.totalGot}] ${base}`);
+      console.log(`Offer used: [${successes.map((s) => s.offerId).join(",")}]`);
     },
   });
 }

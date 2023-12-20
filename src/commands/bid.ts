@@ -4,8 +4,8 @@ import { builder as getMarketOptsBuilder } from "./log";
 
 const builder = (args: yargs.Argv) =>
   getMarketOptsBuilder(args)
-    .option("wants", { type: "number", demandOption: true, requiresArg: true })
-    .option("gives", { type: "number", demandOption: true, requiresArg: true });
+    .option("wants", { type: "string", demandOption: true, requiresArg: true })
+    .option("gives", { type: "string", demandOption: true, requiresArg: true });
 
 export default function registerCommand(_y: typeof yargs) {
   return _y.command({
@@ -18,14 +18,7 @@ export default function registerCommand(_y: typeof yargs) {
 
       const directLP = await mgv.liquidityProvider(market);
 
-      {
-        const tx = await market.quote.approve(mgv.address, wants);
-        const receipt = await tx.wait();
-        if (receipt.status !== 1) {
-          console.error(receipt);
-          throw new Error("Approve transaction failed");
-        }
-      }
+      await (await market.quote.approve(mgv.address, wants)).wait();
 
       const fund = await directLP.computeBidProvision();
 
@@ -35,7 +28,9 @@ export default function registerCommand(_y: typeof yargs) {
         fund,
       });
 
-      console.log(`Bid #[${id}] posted`);
+      console.log(
+        `Bid [${id}] posted: requesting [${gives}] ${base} for [${wants}] ${quote}`
+      );
     },
   });
 }
